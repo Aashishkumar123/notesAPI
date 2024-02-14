@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "notes-backend"
+version = "0.1.0"
+description = "A notes api using django and django rest framework"
+authors = ["Aashish <aashishkumar12376@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^5.0.2"
+djangorestframework = "^3.14.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
