@@ -1,2 +1,2 @@
-from .serializers import SignupSerializer
-from .views import SignupAPIView
+from .serializers import *
+from .views import *
