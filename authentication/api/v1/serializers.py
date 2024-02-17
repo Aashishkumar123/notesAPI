@@ -17,3 +17,19 @@ class SignupSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+
+    def create(self, validated_data): ...
+
+    def update(self, instance, validated_data): ...
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "first_name", "last_name"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["image"] = instance.profile.image.url
+        data["gender"] = instance.profile.gender
+        return data

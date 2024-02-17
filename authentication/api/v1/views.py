@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from authentication.helpers import get_tokens_for_user
@@ -11,7 +12,7 @@ from notes_backend.response import (
     response_401,
 )
 
-from . import LoginSerializer, SignupSerializer
+from . import LoginSerializer, SignupSerializer, UserProfileSerializer
 
 
 class SignupAPIView(APIView):
@@ -38,3 +39,17 @@ class LoginAPIView(APIView):
                 return response_200(data=get_tokens_for_user(user))
             return response_401()
         return response_400(error=login_serializer.errors)
+
+
+class UserProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_profile_serializer = UserProfileSerializer(request.user)
+        return response_200(data=user_profile_serializer.data)
+
+    def patch(self, request): ...
+
+    def delete(self, request):
+        request.user.delete()
+        return response_201(data=None, message="User account deleted!")
