@@ -1,11 +1,15 @@
 from datetime import datetime
 
 from django.contrib.auth import authenticate
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.helpers import get_tokens_for_user
+from notes_backend.response import (
+    response_200,
+    response_201,
+    response_400,
+    response_401,
+)
 
 from . import LoginSerializer, SignupSerializer
 
@@ -15,18 +19,8 @@ class SignupAPIView(APIView):
         signup_serializer = SignupSerializer(data=request.data)
         if signup_serializer.is_valid():
             user = signup_serializer.save()
-            response = {
-                "status": status.HTTP_201_CREATED,
-                "message": "User Created",
-                "data": get_tokens_for_user(user),
-            }
-            return Response(response, status=status.HTTP_201_CREATED)
-        response = {
-            "status_code": status.HTTP_400_BAD_REQUEST,
-            "message": "bad request",
-            "error": signup_serializer.errors,
-        }
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            return response_201(data=get_tokens_for_user(user), message="User Created")
+        return response_400(error=signup_serializer.errors)
 
 
 class LoginAPIView(APIView):
@@ -41,20 +35,6 @@ class LoginAPIView(APIView):
             if user is not None:
                 user.last_login = datetime.now()
                 user.save()
-                response = {
-                    "status_code": status.HTTP_200_OK,
-                    "message": "Login successful",
-                    "data": get_tokens_for_user(user),
-                }
-                return Response(response, status=status.HTTP_200_OK)
-            response = {
-                "status_code": status.HTTP_401_UNAUTHORIZED,
-                "message": "unauthorized",
-            }
-            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-        response = {
-            "status_code": status.HTTP_400_BAD_REQUEST,
-            "message": "bad request",
-            "error": login_serializer.errors,
-        }
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+                return response_200(data=get_tokens_for_user(user))
+            return response_401()
+        return response_400(error=login_serializer.errors)
