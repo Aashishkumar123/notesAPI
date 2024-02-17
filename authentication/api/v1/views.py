@@ -12,7 +12,12 @@ from notes_backend.response import (
     response_401,
 )
 
-from . import LoginSerializer, SignupSerializer, UserProfileSerializer
+from . import (
+    LoginSerializer,
+    SignupSerializer,
+    UpdatePasswordSerializer,
+    UserProfileSerializer,
+)
 
 
 class SignupAPIView(APIView):
@@ -53,3 +58,16 @@ class UserProfileAPIView(APIView):
     def delete(self, request):
         request.user.delete()
         return response_201(data=None, message="User account deleted!")
+
+
+class UpdatePasswordAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        update_password = UpdatePasswordSerializer(
+            data=request.data, context={"request": request}
+        )
+        if update_password.is_valid():
+            update_password.save()
+            return response_201(data=None, message="User password updated!")
+        return response_400(error=update_password.errors)
